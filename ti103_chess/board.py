@@ -1,4 +1,5 @@
 """
+
 Ce module représente l'échiquier.
 
 C'est lui qui va gérer les événements des joueurs et prendre en charge l'affichage du jeu sur l'écran. Pour ce faire,
@@ -13,7 +14,6 @@ Ce module est composé de plusieurs éléments:
 import chess
 import pygame
 import sys
-
 
 # On code le dictionnaire qui représente les pièces d'échec. Les initiales servent à décrire la pièce lors de son
 # mouvement. Par exemple 'e5' représente le mouvement d'un pion vers la case e5, alors que Nb3 représente le déplacement
@@ -35,6 +35,7 @@ class Piece:
     Une pièce possède un nom et une couleur. Elle a aussi une case, et donc possède des coordonnées à l'écran. Elle
     possède enfin une image, et une référence à la surface de jeu à afficher.
     """
+
     def __init__(self, nom, couleur, x, y, taille, image, ecran):
         self.nom = nom
         self.couleur = couleur
@@ -60,76 +61,103 @@ class Piece:
                   |                      |
                   +----------------------+
         """
-        r = self.image.get_rect()       # On récupère la taille de l'image à afficher
-        r.topleft = self.x, self.y      # On passe les coordonnées de la pièce comme coin en haut à gauche du rectangle
+        r = self.image.get_rect()  # On récupère la taille de l'image à afficher
+        r.topleft = self.x, self.y  # On passe les coordonnées de la pièce comme coin en haut à gauche du rectangle
         self.ecran.blit(self.image, r)  # On affichage l'image dans le rectangle crée à l'intérieur de la zone écran
 
-    def case(self):
+    def case(self, x=None, y=None):
+
         """
         Retourne la case correspondante de la piece affichee a l'ecran.
         """
-        return chr(97 + (self.x // 85)) + str(((680 - self.y) // 85) + 1)
+        if x is None and y is None:
+            return chr(97 + (self.x // 85)) + str(((680 - self.y) // 85))
+
+        return chr(97 + (x // 85)) + str(((680 - y) // 85))
+
 
 
 class Echiquier:
     """
     Représente un echiquier.
     """
+
     def __init__(self, ecran, echiquier, image):
         self.moteur = chess.Board()  # Moteur va valider si les mouvements sont valables.
         self.ecran = ecran
         self.echiquier = echiquier
-        self.pieces = [Piece("Roi",      "Noir",  85 * 4, 0,      85, self._image(image, (68, 70, 85, 85)),   ecran),
-                       Piece("Dame",     "Noir",  85 * 3, 0,      85, self._image(image, (234, 70, 85, 85)),  ecran),
-                       Piece("Tour",     "Noir",  85 * 0, 0,      85, self._image(image, (400, 70, 85, 85)),  ecran),
-                       Piece("Tour",     "Noir",  85 * 7, 0,      85, self._image(image, (400, 70, 85, 85)),  ecran),
-                       Piece("Fou",      "Noir",  85 * 2, 0,      85, self._image(image, (566, 70, 85, 85)),  ecran),
-                       Piece("Fou",      "Noir",  85 * 5, 0,      85, self._image(image, (566, 70, 85, 85)),  ecran),
-                       Piece("Cavalier", "Noir",  85 * 1, 0,      85, self._image(image, (736, 70, 85, 85)),  ecran),
-                       Piece("Cavalier", "Noir",  85 * 6, 0,      85, self._image(image, (736, 70, 85, 85)),  ecran),
-                       Piece("Pion",     "Noir",  85 * 0, 85,     85, self._image(image, (902, 70, 85, 85)),  ecran),
-                       Piece("Pion",     "Noir",  85 * 1, 85,     85, self._image(image, (902, 70, 85, 85)),  ecran),
-                       Piece("Pion",     "Noir",  85 * 2, 85,     85, self._image(image, (902, 70, 85, 85)),  ecran),
-                       Piece("Pion",     "Noir",  85 * 3, 85,     85, self._image(image, (902, 70, 85, 85)),  ecran),
-                       Piece("Pion",     "Noir",  85 * 4, 85,     85, self._image(image, (902, 70, 85, 85)),  ecran),
-                       Piece("Pion",     "Noir",  85 * 5, 85,     85, self._image(image, (902, 70, 85, 85)),  ecran),
-                       Piece("Pion",     "Noir",  85 * 6, 85,     85, self._image(image, (902, 70, 85, 85)),  ecran),
-                       Piece("Pion",     "Noir",  85 * 7, 85,     85, self._image(image, (902, 70, 85, 85)),  ecran),
-                       Piece("Roi",      "Blanc", 85 * 4, 85 * 7, 85, self._image(image, (68, 214, 85, 85)),  ecran),
-                       Piece("Dame",     "Blanc", 85 * 3, 85 * 7, 85, self._image(image, (234, 214, 85, 85)), ecran),
-                       Piece("Tour",     "Blanc", 85 * 0, 85 * 7, 85, self._image(image, (400, 214, 85, 85)), ecran),
-                       Piece("Tour",     "Blanc", 85 * 7, 85 * 7, 85, self._image(image, (400, 214, 85, 85)), ecran),
-                       Piece("Fou",      "Blanc", 85 * 2, 85 * 7, 85, self._image(image, (566, 214, 85, 85)), ecran),
-                       Piece("Fou",      "Blanc", 85 * 5, 85 * 7, 85, self._image(image, (566, 214, 85, 85)), ecran),
+        self.pieces = [Piece("Roi", "Noir", 85 * 4, 0, 85, self._image(image, (68, 70, 85, 85)), ecran),
+                       Piece("Dame", "Noir", 85 * 3, 0, 85, self._image(image, (234, 70, 85, 85)), ecran),
+                       Piece("Tour", "Noir", 85 * 0, 0, 85, self._image(image, (400, 70, 85, 85)), ecran),
+                       Piece("Tour", "Noir", 85 * 7, 0, 85, self._image(image, (400, 70, 85, 85)), ecran),
+                       Piece("Fou", "Noir", 85 * 2, 0, 85, self._image(image, (566, 70, 85, 85)), ecran),
+                       Piece("Fou", "Noir", 85 * 5, 0, 85, self._image(image, (566, 70, 85, 85)), ecran),
+                       Piece("Cavalier", "Noir", 85 * 1, 0, 85, self._image(image, (736, 70, 85, 85)), ecran),
+                       Piece("Cavalier", "Noir", 85 * 6, 0, 85, self._image(image, (736, 70, 85, 85)), ecran),
+                       Piece("Pion", "Noir", 85 * 0, 85, 85, self._image(image, (902, 70, 85, 85)), ecran),
+                       Piece("Pion", "Noir", 85 * 1, 85, 85, self._image(image, (902, 70, 85, 85)), ecran),
+                       Piece("Pion", "Noir", 85 * 2, 85, 85, self._image(image, (902, 70, 85, 85)), ecran),
+                       Piece("Pion", "Noir", 85 * 3, 85, 85, self._image(image, (902, 70, 85, 85)), ecran),
+                       Piece("Pion", "Noir", 85 * 4, 85, 85, self._image(image, (902, 70, 85, 85)), ecran),
+                       Piece("Pion", "Noir", 85 * 5, 85, 85, self._image(image, (902, 70, 85, 85)), ecran),
+                       Piece("Pion", "Noir", 85 * 6, 85, 85, self._image(image, (902, 70, 85, 85)), ecran),
+                       Piece("Pion", "Noir", 85 * 7, 85, 85, self._image(image, (902, 70, 85, 85)), ecran),
+                       Piece("Roi", "Blanc", 85 * 4, 85 * 7, 85, self._image(image, (68, 214, 85, 85)), ecran),
+                       Piece("Dame", "Blanc", 85 * 3, 85 * 7, 85, self._image(image, (234, 214, 85, 85)), ecran),
+                       Piece("Tour", "Blanc", 85 * 0, 85 * 7, 85, self._image(image, (400, 214, 85, 85)), ecran),
+                       Piece("Tour", "Blanc", 85 * 7, 85 * 7, 85, self._image(image, (400, 214, 85, 85)), ecran),
+                       Piece("Fou", "Blanc", 85 * 2, 85 * 7, 85, self._image(image, (566, 214, 85, 85)), ecran),
+                       Piece("Fou", "Blanc", 85 * 5, 85 * 7, 85, self._image(image, (566, 214, 85, 85)), ecran),
                        Piece("Cavalier", "Blanc", 85 * 1, 85 * 7, 85, self._image(image, (736, 214, 85, 85)), ecran),
                        Piece("Cavalier", "Blanc", 85 * 6, 85 * 7, 85, self._image(image, (736, 214, 85, 85)), ecran),
-                       Piece("Pion",     "Blanc", 85 * 0, 85 * 6, 85, self._image(image, (902, 214, 85, 85)), ecran),
-                       Piece("Pion",     "Blanc", 85 * 1, 85 * 6, 85, self._image(image, (902, 214, 85, 85)), ecran),
-                       Piece("Pion",     "Blanc", 85 * 2, 85 * 6, 85, self._image(image, (902, 214, 85, 85)), ecran),
-                       Piece("Pion",     "Blanc", 85 * 3, 85 * 6, 85, self._image(image, (902, 214, 85, 85)), ecran),
-                       Piece("Pion",     "Blanc", 85 * 4, 85 * 6, 85, self._image(image, (902, 214, 85, 85)), ecran),
-                       Piece("Pion",     "Blanc", 85 * 5, 85 * 6, 85, self._image(image, (902, 214, 85, 85)), ecran),
-                       Piece("Pion",     "Blanc", 85 * 6, 85 * 6, 85, self._image(image, (902, 214, 85, 85)), ecran),
-                       Piece("Pion",     "Blanc", 85 * 7, 85 * 6, 85, self._image(image, (902, 214, 85, 85)), ecran)]
+                       Piece("Pion", "Blanc", 85 * 0, 85 * 6, 85, self._image(image, (902, 214, 85, 85)), ecran),
+                       Piece("Pion", "Blanc", 85 * 1, 85 * 6, 85, self._image(image, (902, 214, 85, 85)), ecran),
+                       Piece("Pion", "Blanc", 85 * 2, 85 * 6, 85, self._image(image, (902, 214, 85, 85)), ecran),
+                       Piece("Pion", "Blanc", 85 * 3, 85 * 6, 85, self._image(image, (902, 214, 85, 85)), ecran),
+                       Piece("Pion", "Blanc", 85 * 4, 85 * 6, 85, self._image(image, (902, 214, 85, 85)), ecran),
+                       Piece("Pion", "Blanc", 85 * 5, 85 * 6, 85, self._image(image, (902, 214, 85, 85)), ecran),
+                       Piece("Pion", "Blanc", 85 * 6, 85 * 6, 85, self._image(image, (902, 214, 85, 85)), ecran),
+                       Piece("Pion", "Blanc", 85 * 7, 85 * 6, 85, self._image(image, (902, 214, 85, 85)), ecran)]
 
     def jouer(self):
         """
         C'est ici que se trouve la boucle de jeu, dans laquelle se rafraichit l'image de l'echiquier.
         """
+        piece_selectionne = None
+
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit(0)
 
-                elif event.type == pygame.MOUSEBUTTONDOWN:
+                elif event.type == pygame.MOUSEBUTTONDOWN:  # Bouton presse pas relache
                     if event.button == 1:
                         x, y = event.pos
-                        print(x, y)
+                        initials = x, y
 
-                elif event.type == pygame.MOUSEBUTTONUP:
+                        for piece in self.pieces:
+                            if (x // 85 * 85) == piece.x and (y // 85 * 85) == piece.y:
+                                piece_selectionne = piece
+
+                elif event.type == pygame.MOUSEBUTTONUP:  # Bouton vient juste d'etre relache
                     if event.button == 1:
                         x, y = event.pos
-                        print(x, y)
+
+                        if event.pos == initials:
+                            break
+
+
+                        elif chess.Move.from_uci(
+                            f"{piece_selectionne.case()}{piece_selectionne.case(x // 85 * 85, y // 85 * 85)}") in self.moteur.legal_moves:
+                            piece_selectionne.x = x // 85 * 85
+                            piece_selectionne.y = y // 85 * 85
+                            self.moteur.push_san(f"{piece_initiale[piece_selectionne.nom]}{piece_selectionne.case()}")
+                            for i, p in enumerate(self.pieces):
+                                if piece_selectionne.x == p.x and piece_selectionne.y == p.y and p is not piece_selectionne:
+                                    print(f"{p.couleur} {p.nom} being captured")
+                                    self.pieces.pop(i)
+                                    break
+
 
             self.ecran.fill((255, 255, 255))
             self.ecran.blit(self.echiquier, self.echiquier.get_rect())
@@ -153,12 +181,12 @@ def nouvelle_partie():
 
     La fonction retourne un echiquier et ses pieces disposees pour debuter une partie.
     """
-    pygame.init()                                # Initialisation du moteur de jeu pygame
+    pygame.init()  # Initialisation du moteur de jeu pygame
     ecran = pygame.display.set_mode((680, 680))  # On cree une fenetre de 680 pixel par 680 pixels
-    pygame.display.set_caption("Echecs")         # Le titre de la fenetre s'appelle Echecs
+    pygame.display.set_caption("Echecs")  # Le titre de la fenetre s'appelle Echecs
 
-    echiquier = pygame.Surface((680, 680))       # On definit une surface a l'ecran pour representer l'echiquier
-    echiquier.fill((175, 141, 120))              # Que l'on peint en marron (uni) voici le RGB(175, 141, 120)
+    echiquier = pygame.Surface((680, 680))  # On definit une surface a l'ecran pour representer l'echiquier
+    echiquier.fill((175, 141, 120))  # Que l'on peint en marron (uni) voici le RGB(175, 141, 120)
 
     # Les lignes suivantes permettent de peindre dans un marron legerement different les cases de l'echiquier
     # precedemment defini.
